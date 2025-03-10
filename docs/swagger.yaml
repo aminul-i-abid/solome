@@ -1,0 +1,1134 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 'SoloMe - Project Management App For Solopreneurs'
+  description: 'The go-to project management app for solopreneurs who want to keep things simple, with no unnecessary features, just the essential tools you need to stay organized.'
+  contact:
+    name: Aminul Islam Abid
+    email: aminul.i.abid@gmail.com
+servers:
+  - description: Dev Server
+    url: http://localhost:3000/api/v1
+  - description: Prod Server
+    url: https://solome.vercel.app/api/v1
+tags:
+  - name: Health
+    description: Server Health Check Operation
+  - name: Auth
+    description: User Authentication
+  - name: Users
+    description: User Management
+  - name: Projects
+    description: Project Management
+  - name: Label
+    description: Label Management
+  - name: Tasks
+    description: Task Management
+  - name: Calendar
+    description: Get All In-Progress Tasks.
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: returns the api status
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Server is running
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Server is running
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Account created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      summary: User login
+      description: Authenticate a user using either username or email along with a password
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - properties:
+                    username:
+                      type: string
+                      example: johndoe
+                    password:
+                      type: string
+                      format: password
+                      example: 12345678
+                  required: [username, password]
+                - properties:
+                    email:
+                      type: string
+                      format: email
+                      example: johndoe@example.com
+                    password:
+                      type: string
+                      format: password
+                      example: 12345678
+                  required: [email, password]
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Login successful
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: 123e4567-e89b-12d3-a456-426614174000
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token
+      description: Exchanges a valid refresh token for a new access token
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+              required: [refreshToken]
+      responses:
+        '200':
+          description: New access token generated
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Token refreshed successfully
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      summary: Log out a user
+      description: Invalidate the user's refresh token to log them out.
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+              required: [refreshToken]
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me:
+    get:
+      summary: Get current user details
+      description: Fetches the details of the currently authenticated user.
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully fetched user details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Successfully fetched user details
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    patch:
+      summary: Update user details
+      description: Partially update the authenticated user's details
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User details updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      summary: Delete User Account
+      description: Permanently deletes the authenticated user's account.
+      security:
+        - BearerAuth: []
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Account successfully deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: 'Account deleted successfully.'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects:
+    get:
+      summary: Get all projects
+      description: Retrieve a list of all projects for the authenticated user.
+      security:
+        - BearerAuth: []
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: Retrieve a list of projects.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Retrieve all projects successfully.
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create new project
+      description: Allows a user to create a new project.
+      security:
+        - BearerAuth: []
+      tags:
+        - Projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+      responses:
+        '200':
+          description: Project created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Project created successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /projects/{projectId}:
+    patch:
+      summary: Update a project
+      description: Allows a user to update an existing project.
+      security:
+        - BearerAuth: []
+      tags:
+        - Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The ID of the project to update
+          schema:
+            type: string
+            example: '123e4567-e89b-12d3-a456-426614174000'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+      responses:
+        '200':
+          description: Project updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Project updated successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      summary: Delete a project
+      description: Allows a user to delete an existing project.
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The ID of the project to delete
+          schema:
+            type: string
+            example: '123e4567-e89b-12d3-a456-426614174000'
+      responses:
+        '200':
+          description: Project deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Project deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /label:
+    post:
+      summary: Create a label
+      description: Create a custom label for current user.
+      security:
+        - BearerAuth: []
+      tags:
+        - Label
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Label'
+      responses:
+        '200':
+          description: Label created succuessfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Label created succuessfully.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    patch:
+      summary: Update a label
+      description: Update a custom label for current user.
+      security:
+        - BearerAuth: []
+      tags:
+        - Label
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Label'
+      responses:
+        '200':
+          description: Label updated succuessfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Label updated succuessfully.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /label/{labelId}:
+    delete:
+      summary: Delete a label
+      description: Delete a custom label.
+      security:
+        - BearerAuth: []
+      tags:
+        - Label
+      parameters:
+        - name: labelId
+          in: path
+          required: true
+          description: The ID of the label to delete
+          schema:
+            type: string
+            example: '123e4567-e89b-12d3-a456-426614174000'
+      responses:
+        '200':
+          description: Label deleted succuessfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Label deleted succuessfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tasks:
+    get:
+      summary: Get all tasks
+      description: Retrieve a list of all tasks for the authenticated user.
+      security:
+        - BearerAuth: []
+      tags:
+        - Tasks
+      parameters:
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high]
+          description: Filter tasks by priority.
+        - name: label
+          in: query
+          schema:
+            type: string
+          description: Filter tasks by label.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in-progress, completed]
+          description: Filter tasks by status.
+        - name: due_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter tasks by due date.
+      responses:
+        '200':
+          description: A list of tasks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Retrieve all tasks successfully.
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create a new task
+      description: Allows a user to create a new task with various attributes.
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Task created successfully.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /tasks/{taskId}:
+    patch:
+      summary: Update a task
+      description: Allows a user to update an existing task.
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task to update
+          schema:
+            type: string
+            example: '123e4567-e89b-12d3-a456-426614174000'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Task updated successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete a task
+      description: Allows a user to delete an existing task.
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task to delete
+          schema:
+            type: string
+            example: '123e4567-e89b-12d3-a456-426614174000'
+      responses:
+        '200':
+          description: Task deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Task deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /calender:
+    get:
+      summary: Get all in-progress tasks.
+      description: Get current user's in-progress tasks with title, due date, label, priority.
+      tags:
+        - Calendar
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          description: Due date
+          schema:
+            type: string
+            format: date-time
+        - name: label
+          in: query
+          description: Custom label
+          schema:
+            type: string
+            enum: [label1, label2, label3]
+        - name: priority
+          in: query
+          description: Priority
+          schema:
+            type: string
+            enum: [low, medium, high]
+      responses:
+        '200':
+          description: Retrieve tasks with due date successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Retrieve tasks with due date successfully.
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: Task title
+                        dueDate:
+                          type: string
+                          format: date-time
+                        label:
+                          type: string
+                          example: label1
+                        priority:
+                          type: string
+                          example: low
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  schemas:
+    Timestamp:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserCreate:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        username:
+          type: string
+          example: johndoe123
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        password:
+          type: string
+          format: password
+          example: 12345678
+
+    User:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: 123e4567-e89b-12d3-a456-426614174000
+            firstName:
+              type: string
+              example: John
+            lastName:
+              type: string
+              example: Doe
+            username:
+              type: string
+              example: johndoe123
+            email:
+              type: string
+              format: email
+              example: johndoe@example.com
+            password:
+              type: string
+              format: password
+              example: 12345678
+        - $ref: '#/components/schemas/Timestamp'
+
+    ProjectCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: project name
+        description:
+          type: string
+          example: this is project description
+        status:
+          type: string
+          enum: [inprogress, complete]
+          example: inprogress
+
+    Project:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: 123e4567-e89b-12d3-a456-426614174000
+            userId:
+              type: string
+              example: 123e4567-e89b-12d3-a456-426614174000
+            name:
+              type: string
+              example: project name
+            description:
+              type: string
+              example: this is project description
+            status:
+              type: string
+              enum: [inprogress, completed]
+              example: completed
+            progression:
+              type: string
+              example: 78%
+        - $ref: '#/components/schemas/Timestamp'
+
+    Label:
+      type: object
+      properties:
+        name:
+          type: string
+          example: label1
+        color:
+          type: string
+          example: '#000'
+
+    TaskCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Write API Documentation
+        description:
+          type: string
+          example: Write detailed API documentation for the SoloMe project.
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: high
+        status:
+          type: string
+          enum: [pending, in-progress, completed]
+          example: in-progress
+        dueDate:
+          type: string
+          format: date
+          example: 2025-03-15
+        timeLog:
+          type: object
+          properties:
+            startTime:
+              type: string
+              format: date-time
+            endTime:
+              type: string
+              format: date-time
+            duration:
+              type: string
+              example: 00:15:45
+        subtask:
+          type: array
+          items:
+            type: object
+            properties:
+              task:
+                type: string
+                example: thing to do
+              isComplete:
+                type: boolean
+        attachments:
+          type: array
+          items:
+            type: string
+          example:
+            - https://example.com/file1.png
+            - https://example.com/file2.pdf
+        comments:
+          type: array
+          items:
+            type: string
+          example:
+            - first comment
+            - second comment
+
+    Task:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: 123e4567-e89b-12d3-a456-426614174000
+            projectId:
+              type: string
+              example: 123e4567-e89b-12d3-a456-426614174000
+            labelId:
+              type: string
+              example: 123e4567-e89b-12d3-a456-426614174000
+            title:
+              type: string
+              example: Write API Documentation
+            description:
+              type: string
+              example: Write detailed API documentation for the SoloMe project.
+            priority:
+              type: string
+              enum: [low, medium, high]
+              example: high
+            status:
+              type: string
+              enum: [pending, in-progress, completed]
+              example: in-progress
+            dueDate:
+              type: string
+              format: date
+              example: 2025-03-15
+            timeLog:
+              type: object
+              properties:
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                duration:
+                  type: string
+                  example: 00:15:45
+            subtask:
+              type: array
+              items:
+                type: object
+                properties:
+                  task:
+                    type: string
+                    example: thing to do
+                  isComplete:
+                    type: boolean
+            attachments:
+              type: array
+              items:
+                type: string
+              example:
+                - https://example.com/file1.png
+                - https://example.com/file2.pdf
+            comments:
+              type: array
+              items:
+                type: string
+              example:
+                - first comment
+                - second comment
+        - $ref: '#/components/schemas/Timestamp'
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Bad Request
+              code:
+                type: integer
+                format: int32
+                example: 400
+              message:
+                type: string
+                example: "'field_name' field is required."
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Unauthorized
+              code:
+                type: integer
+                format: int32
+                example: 401
+              message:
+                type: string
+                example: Invalid 'resource'
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: 'error'
+              code:
+                type: integer
+                format: int32
+                example: 404
+              message:
+                type: string
+                example: "'resource' not found."
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Conflict
+              code:
+                type: integer
+                format: int32
+                example: 409
+              message:
+                type: string
+                example: "'resource' already exist."
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
