@@ -1,15 +1,16 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HealthController } from './health/health.controller';
+import { AuthModule } from './auth/auth.module';
+import { CsrfModule } from './csrf/csrf.module';
+import { HealthModule } from './health/health.module';
 import { HttpLoggerMiddleware } from './middleware/http-logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
-import { PrismaService } from './prisma/prisma.service';
 
 @Module({
-  imports: [PrismaModule],
-  controllers: [AppController, HealthController],
-  providers: [AppService, PrismaService],
+  imports: [PrismaModule, HealthModule, CsrfModule, AuthModule],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

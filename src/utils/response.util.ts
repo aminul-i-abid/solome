@@ -26,7 +26,7 @@ export class ResponseUtil {
     message: string,
     data?: T,
     code: number = HttpStatus.OK,
-    status: string = 'success',
+    status: string = 'SUCCESS',
   ): SuccessResponse {
     return {
       status,
@@ -46,7 +46,7 @@ export class ResponseUtil {
   static error(
     message: string,
     code: number = HttpStatus.BAD_REQUEST,
-    error = 'Bad Request',
+    error: string = HttpStatus[HttpStatus.BAD_REQUEST],
   ): ErrorResponse {
     return {
       error,
