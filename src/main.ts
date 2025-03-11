@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common'; // Add BadRequestException import
+import { Logger, ValidationPipe } from '@nestjs/common'; // Add BadRequestException import
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
@@ -43,7 +43,14 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new HttpResponseInterceptor());
 
-  app.use(doubleCsrfProtection);
+  // Apply CSRF protection conditionally based on environment variable
+  const csrfProtectionEnabled = process.env.CSRF_PROTECTION_ENABLED !== 'false';
+  if (csrfProtectionEnabled) {
+    app.use(doubleCsrfProtection);
+    Logger.log('CSRF protection enabled');
+  } else {
+    Logger.log('CSRF protection disabled for development');
+  }
 
   // Load the Swagger YAML file
   const swaggerDocument = load(

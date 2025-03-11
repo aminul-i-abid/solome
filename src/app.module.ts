@@ -2,13 +2,14 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CronJobModule } from './cron-job/cron-job.module';
 import { CsrfModule } from './csrf/csrf.module';
 import { HealthModule } from './health/health.module';
 import { HttpLoggerMiddleware } from './middleware/http-logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule, HealthModule, CsrfModule, AuthModule],
+  imports: [PrismaModule, HealthModule, CsrfModule, AuthModule, CronJobModule],
   controllers: [AppController],
   providers: [AppService],
 })
