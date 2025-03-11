@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponseUtil } from 'src/utils/response.util';
 import { RegisterDto } from './dto/register.dto';
@@ -20,9 +20,17 @@ export class AuthService {
 
     if (existingUser) {
       if (existingUser.username === body.username) {
-        return ResponseUtil.error('Username already exists');
+        return ResponseUtil.error(
+          'Username already exists',
+          409,
+          HttpStatus[HttpStatus.CONFLICT],
+        );
       }
-      return ResponseUtil.error('Email already exists');
+      return ResponseUtil.error(
+        'Email already exists',
+        409,
+        HttpStatus[HttpStatus.CONFLICT],
+      );
     }
 
     await this.prisma.user.create({
