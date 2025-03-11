@@ -49,7 +49,7 @@ export class AuthService {
     return ResponseUtil.success(
       'Account created successfully',
       null,
-      HttpStatus.OK,
+      HttpStatus.CREATED,
     );
   }
 
