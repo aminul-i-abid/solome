@@ -76,7 +76,7 @@ paths:
                   code:
                     type: integer
                     format: int32
-                    example: 200
+                    example: 201
                   message:
                     type: string
                     example: Account created successfully
