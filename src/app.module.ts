@@ -13,9 +13,17 @@ import { HealthModule } from './health/health.module';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { HttpLoggerMiddleware } from './middleware/http-logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [PrismaModule, HealthModule, CsrfModule, AuthModule, CronJobModule],
+  imports: [
+    PrismaModule,
+    HealthModule,
+    CsrfModule,
+    AuthModule,
+    CronJobModule,
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
