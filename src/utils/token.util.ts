@@ -28,7 +28,7 @@ export class TokenUtil {
   /**
    * Default expiration times (in seconds)
    */
-  private static readonly DEFAULT_ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 minutes
+  private static readonly DEFAULT_ACCESS_TOKEN_EXPIRY = 1 * 24 * 60 * 60; // 1 day
   private static readonly DEFAULT_REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60; // 7 days
 
   /**
