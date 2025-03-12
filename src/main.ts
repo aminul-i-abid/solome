@@ -1,4 +1,4 @@
-import { Logger, ValidationPipe } from '@nestjs/common'; // Add BadRequestException import
+import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common'; // Add BadRequestException import
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
@@ -10,7 +10,6 @@ import { AppModule } from './app.module';
 import { doubleCsrfProtection } from './common/config/csrf.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { HttpResponseInterceptor } from './common/interceptors/http-response.interceptor';
-import { ResponseUtil } from './utils/response.util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,10 +35,11 @@ async function bootstrap() {
           message = Object.values(error.constraints ?? {})[0];
         }
 
-        ResponseUtil.error(message); // Use BadRequestException instead of Error
+        throw new BadRequestException(message); // Use BadRequestException instead of Error
       },
     }),
   );
+
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new HttpResponseInterceptor());
 
