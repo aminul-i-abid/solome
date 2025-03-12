@@ -57,4 +57,16 @@ export class UsersService {
 
     return ResponseUtil.success('User updated successfully');
   }
+
+  async deleteCurrentUser(userId: string) {
+    await this.currentUser(userId);
+
+    await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    return ResponseUtil.success('User deleted successfully');
+  }
 }
