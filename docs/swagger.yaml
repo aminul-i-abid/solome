@@ -887,10 +887,7 @@ components:
         description:
           type: string
           example: this is project description
-        status:
-          type: string
-          enum: [inprogress, complete]
-          example: inprogress
+      required: [name, description]
 
     Project:
       allOf:
