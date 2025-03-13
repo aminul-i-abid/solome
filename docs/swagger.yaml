@@ -20,7 +20,7 @@ tags:
     description: User Management
   - name: Projects
     description: Project Management
-  - name: Label
+  - name: Labels
     description: Label Management
   - name: Tasks
     description: Task Management
@@ -473,14 +473,44 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /label:
+  /labels:
+    get:
+      summary: Get all labels
+      description: Retrieve a list of all custom labels for the authenticated user.
+      security:
+        - BearerAuth: []
+      tags:
+        - Labels
+      responses:
+        '200':
+          description: Retrieve a list of labels.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Retrieve all labels successfully.
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Label'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
     post:
       summary: Create a label
       description: Create a custom label for current user.
       security:
         - BearerAuth: []
       tags:
-        - Label
+        - Labels
       requestBody:
         content:
           application/json:
@@ -508,13 +538,22 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /label/{labelId}:
     patch:
       summary: Update a label
       description: Update a custom label for current user.
       security:
         - BearerAuth: []
       tags:
-        - Label
+        - Labels
+      parameters:
+        - name: labelId
+          in: path
+          required: true
+          description: The ID of the label to update
+          schema:
+            type: string
+            example: '123e4567-e89b-12d3-a456-426614174000'
       requestBody:
         content:
           application/json:
@@ -541,15 +580,13 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-
-  /label/{labelId}:
     delete:
       summary: Delete a label
       description: Delete a custom label.
       security:
         - BearerAuth: []
       tags:
-        - Label
+        - Labels
       parameters:
         - name: labelId
           in: path
