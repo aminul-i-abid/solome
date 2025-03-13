@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service';
@@ -16,5 +16,10 @@ export class ProjectsController {
       req.user.userId,
       createProjectDto,
     );
+  }
+
+  @Get()
+  async getProjects(@Req() req: Request) {
+    return this.projectsService.getProjects(req.user.userId);
   }
 }
