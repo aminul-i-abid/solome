@@ -6,6 +6,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
+
   async createProject(userId: string, body: CreateProjectDto) {
     await this.prisma.project.create({
       data: {
@@ -15,5 +16,15 @@ export class ProjectsService {
     });
 
     return ResponseUtil.success('Project created successfully');
+  }
+
+  async getProjects(userId: string) {
+    const projects = await this.prisma.project.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return ResponseUtil.success('Retrieve all projects successfully', projects);
   }
 }
