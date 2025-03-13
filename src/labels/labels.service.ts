@@ -21,4 +21,14 @@ export class LabelsService {
       HttpStatus.CREATED,
     );
   }
+
+  async getLabels(userId: string) {
+    const labels = await this.prisma.label.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return ResponseUtil.success('Successfully fetched labels', labels);
+  }
 }
