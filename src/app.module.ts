@@ -15,6 +15,7 @@ import { HttpLoggerMiddleware } from './middleware/http-logger.middleware';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
+import { LabelsModule } from './labels/labels.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from './users/users.module';
     CronJobModule,
     UsersModule,
     ProjectsModule,
+    LabelsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

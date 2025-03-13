@@ -17,7 +17,7 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
-  async createProject(
+  createProject(
     @Req() req: Request,
     @Body() createProjectDto: CreateProjectDto,
   ) {
@@ -28,12 +28,12 @@ export class ProjectsController {
   }
 
   @Get()
-  async getProjects(@Req() req: Request) {
+  getProjects(@Req() req: Request) {
     return this.projectsService.getProjects(req.user.userId);
   }
 
   @Patch(':projectId')
-  async updateProject(
+  updateProject(
     @Req() req: Request,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
@@ -45,7 +45,7 @@ export class ProjectsController {
   }
 
   @Delete(':projectId')
-  async deleteProject(@Req() req: Request) {
+  deleteProject(@Req() req: Request) {
     return this.projectsService.deleteProject(
       req.user.userId,
       req.params.projectId,

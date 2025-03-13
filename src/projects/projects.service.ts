@@ -19,6 +19,7 @@ export class ProjectsService {
 
     return ResponseUtil.success(
       'Project created successfully',
+      null,
       HttpStatus.CREATED,
     );
   }
