@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -33,6 +41,14 @@ export class ProjectsController {
       req.user.userId,
       req.params.projectId,
       updateProjectDto,
+    );
+  }
+
+  @Delete(':projectId')
+  async deleteProject(@Req() req: Request) {
+    return this.projectsService.deleteProject(
+      req.user.userId,
+      req.params.projectId,
     );
   }
 }

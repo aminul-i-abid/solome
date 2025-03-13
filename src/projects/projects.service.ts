@@ -63,4 +63,25 @@ export class ProjectsService {
 
     return ResponseUtil.success('Project updated successfully');
   }
+
+  async deleteProject(userId: string, projectId: string) {
+    const project = await this.prisma.project.findFirst({
+      where: {
+        id: projectId,
+        userId,
+      },
+    });
+
+    if (!project) {
+      return ResponseUtil.error('Project not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.prisma.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
+
+    return ResponseUtil.success('Project deleted successfully');
+  }
 }
