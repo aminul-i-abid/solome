@@ -1,8 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { hasValidPropertyValidator } from 'src/common/validators/has-valid-property.validator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponseUtil } from 'src/utils/response.util';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -37,14 +34,8 @@ export class UsersService {
   async updateCurrentUser(userId: string, body: UpdateUserDto) {
     await this.currentUser(userId);
 
-    const hasValidProperty = Object.values(body).some(
-      (value) => value !== undefined && value !== null,
-    );
-    if (!hasValidProperty) {
-      throw new BadRequestException(
-        'At least one property must be provided for update',
-      );
-    }
+    // Check if the body has at least one valid property to update
+    hasValidPropertyValidator(body);
 
     await this.prisma.user.update({
       where: {
