@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
@@ -25,5 +33,10 @@ export class LabelsController {
       req.params.labelId,
       updateLabelDto,
     );
+  }
+
+  @Delete(':labelId')
+  deleteLabel(@Req() req: Request) {
+    return this.labelsService.deleteLabel(req.user.userId, req.params.labelId);
   }
 }

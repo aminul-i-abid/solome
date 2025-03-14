@@ -50,4 +50,15 @@ export class LabelsService {
 
     return ResponseUtil.success('Label updated successfully');
   }
+
+  async deleteLabel(userId: string, labelId: string) {
+    await this.prisma.label.delete({
+      where: {
+        userId,
+        id: labelId,
+      },
+    });
+
+    return ResponseUtil.success('Label deleted successfully');
+  }
 }
