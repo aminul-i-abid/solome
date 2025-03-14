@@ -967,7 +967,7 @@ components:
         title:
           type: string
           example: Write API Documentation
-        description:
+        content:
           type: string
           example: Write detailed API documentation for the SoloMe project.
         priority:
@@ -994,7 +994,7 @@ components:
             duration:
               type: string
               example: 00:15:45
-        subtask:
+        subTasks:
           type: array
           items:
             type: object

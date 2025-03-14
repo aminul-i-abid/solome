@@ -1,3 +1,4 @@
+import { ProjectStatus } from '@prisma/client';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class UpdateProjectDto {
@@ -10,8 +11,8 @@ export class UpdateProjectDto {
   description: string;
 
   @IsOptional()
-  @IsEnum(['IN_PROGRESS', 'COMPLETED'], {
+  @IsEnum(ProjectStatus, {
     message: 'Status must be either IN_PROGRESS or COMPLETED',
   })
-  status: 'IN_PROGRESS' | 'COMPLETED';
+  status: ProjectStatus;
 }
