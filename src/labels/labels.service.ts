@@ -1,7 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { hasValidPropertyValidator } from 'src/common/validators/has-valid-property.validator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponseUtil } from 'src/utils/response.util';
 import { CreateLabelDto } from './dto/create-label.dto';
+import { UpdateLabelDto } from './dto/update-label.dto';
 
 @Injectable()
 export class LabelsService {
@@ -30,5 +32,22 @@ export class LabelsService {
     });
 
     return ResponseUtil.success('Successfully fetched labels', labels);
+  }
+
+  async updateLabel(userId: string, labelId: string, body: UpdateLabelDto) {
+    // Check if the body has at least one valid property to update
+    hasValidPropertyValidator(body);
+
+    await this.prisma.label.update({
+      where: {
+        userId,
+        id: labelId,
+      },
+      data: {
+        ...body,
+      },
+    });
+
+    return ResponseUtil.success('Label updated successfully');
   }
 }
