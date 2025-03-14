@@ -52,12 +52,16 @@ export class LabelsService {
   }
 
   async deleteLabel(userId: string, labelId: string) {
-    await this.prisma.label.delete({
+    const label = await this.prisma.label.delete({
       where: {
         userId,
         id: labelId,
       },
     });
+
+    if (!label) {
+      return ResponseUtil.error('Label not found', HttpStatus.NOT_FOUND);
+    }
 
     return ResponseUtil.success('Label deleted successfully');
   }
