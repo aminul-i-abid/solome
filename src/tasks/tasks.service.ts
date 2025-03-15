@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { hasValidPropertyValidator } from 'src/common/validators/has-valid-property.validator';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,10 +15,34 @@ import { TaskDto } from './dto/task.dto';
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  async createTask(body: TaskDto) {
+  private async hasValidProjectId(userId: string, projectId: string) {
+    const projectIds = await this.prisma.project.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    // Check if the project ID is owned by the user
+    const isOwnedProject = projectIds.some(
+      (project) => project.id === projectId,
+    );
+
+    if (!isOwnedProject) {
+      throw new NotFoundException('Project not found');
+    }
+
+    return true;
+  }
+
+  async createTask(userId: string, body: TaskDto) {
     if (!body.projectId) {
       throw new BadRequestException('Project ID is required');
     }
+
+    await this.hasValidProjectId(userId, body.projectId);
     try {
       // Use a transaction to ensure atomicity
       await this.prisma.$transaction(async (prisma) => {
@@ -79,7 +104,9 @@ export class TasksService {
     }
   }
 
-  async getTasks(params: GetTasksParamsDto) {
+  async getTasks(userId: string, params: GetTasksParamsDto) {
+    await this.hasValidProjectId(userId, params.project_id);
+
     const tasks = await this.prisma.task.findMany({
       where: {
         projectId: params.project_id,
