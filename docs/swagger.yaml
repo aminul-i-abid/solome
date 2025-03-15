@@ -944,8 +944,8 @@ components:
               example: this is project description
             status:
               type: string
-              enum: [inprogress, completed]
-              example: completed
+              enum: [IN_PROGRESS, COMPLETED]
+              example: COMPLETED
             progression:
               type: string
               example: 78%
@@ -972,16 +972,15 @@ components:
           example: Write detailed API documentation for the SoloMe project.
         priority:
           type: string
-          enum: [low, medium, high]
-          example: high
+          enum: [LOW, MEDIUM, HIGH]
+          example: HIGH
         status:
           type: string
-          enum: [pending, in-progress, completed]
-          example: in-progress
+          enum: [TODO, IN_PROGRESS, COMPLETED]
+          example: IN_PROGRESS
         dueDate:
           type: string
-          format: date
-          example: 2025-03-15
+          format: date-time
         timeLog:
           type: object
           properties:
@@ -1040,16 +1039,15 @@ components:
               example: Write detailed API documentation for the SoloMe project.
             priority:
               type: string
-              enum: [low, medium, high]
-              example: high
+              enum: [LOW, MEDIUM, HIGH]
+              example: HIGH
             status:
               type: string
-              enum: [pending, in-progress, completed]
-              example: in-progress
+              enum: [TODO, IN_PROGRESS, COMPLETED]
+              example: IN_PROGRESS
             dueDate:
               type: string
-              format: date
-              example: 2025-03-15
+              format: date-time
             timeLog:
               type: object
               properties:

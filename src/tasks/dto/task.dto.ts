@@ -11,6 +11,10 @@ import {
 class SubTaskDto {
   @IsOptional()
   @IsString()
+  id: string;
+
+  @IsOptional()
+  @IsString()
   todo: string;
 
   @IsOptional()
@@ -19,6 +23,10 @@ class SubTaskDto {
 }
 
 class TimeLogDto {
+  @IsOptional()
+  @IsString()
+  id: string;
+
   @IsOptional()
   @IsDateString()
   startTime: string;
