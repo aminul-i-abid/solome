@@ -14,7 +14,16 @@ import { HttpResponseInterceptor } from './common/interceptors/http-response.int
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  // Set allowed origins for CORS based on environment
+  const allowedOrigins =
+    process.env.NODE_ENV === 'production'
+      ? [process.env.ORIGIN_PROD]
+      : [process.env.ORIGIN_DEV];
+  app.enableCors({
+    origin: allowedOrigins,
+    credentials: true,
+  });
+
   app.use(helmet());
   app.use(cookieParser());
 

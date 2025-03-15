@@ -632,7 +632,7 @@ paths:
             type: string
             enum: [low, medium, high]
           description: Filter tasks by priority.
-        - name: label
+        - name: labelId
           in: query
           schema:
             type: string
@@ -800,18 +800,17 @@ paths:
       security:
         - BearerAuth: []
       parameters:
-        - name: date
+        - name: due_date
           in: query
           description: Due date
           schema:
             type: string
             format: date-time
-        - name: label
+        - name: labelId
           in: query
           description: Custom label
           schema:
             type: string
-            enum: [label1, label2, label3]
         - name: priority
           in: query
           description: Priority

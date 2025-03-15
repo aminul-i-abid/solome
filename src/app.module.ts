@@ -17,6 +17,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { LabelsModule } from './labels/labels.module';
 import { TasksModule } from './tasks/tasks.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TasksModule } from './tasks/tasks.module';
     ProjectsModule,
     LabelsModule,
     TasksModule,
+    CalendarModule,
   ],
   controllers: [AppController],
   providers: [AppService],

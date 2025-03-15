@@ -18,13 +18,13 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  createTask(@Body() createTaskDto: TaskDto) {
-    return this.tasksService.createTask(createTaskDto);
+  createTask(@Req() req: Request, @Body() createTaskDto: TaskDto) {
+    return this.tasksService.createTask(req.user.userId, createTaskDto);
   }
 
   @Get()
-  getTasks(@Query() getTasksParamsDto: GetTasksParamsDto) {
-    return this.tasksService.getTasks(getTasksParamsDto);
+  getTasks(@Req() req: Request, @Query() getTasksParamsDto: GetTasksParamsDto) {
+    return this.tasksService.getTasks(req.user.userId, getTasksParamsDto);
   }
 
   @Patch(':taskId')
