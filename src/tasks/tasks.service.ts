@@ -179,4 +179,28 @@ export class TasksService {
       );
     }
   }
+
+  async deleteTask(taskId: string) {
+    const task = await this.prisma.task.findFirst({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!task) {
+      return ResponseUtil.error(
+        'Task not found',
+        HttpStatus.NOT_FOUND,
+        HttpStatus[HttpStatus.NOT_FOUND],
+      );
+    }
+
+    await this.prisma.task.delete({
+      where: {
+        id: taskId,
+      },
+    });
+
+    return ResponseUtil.success('Task deleted successfully');
+  }
 }

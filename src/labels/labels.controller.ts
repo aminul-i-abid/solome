@@ -37,6 +37,6 @@ export class LabelsController {
 
   @Delete(':labelId')
   deleteLabel(@Req() req: Request) {
-    return this.labelsService.deleteLabel(req.user.userId, req.params.labelId);
+    return this.labelsService.deleteLabel(req.params.labelId);
   }
 }

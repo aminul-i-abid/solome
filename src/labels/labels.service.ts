@@ -51,17 +51,26 @@ export class LabelsService {
     return ResponseUtil.success('Label updated successfully');
   }
 
-  async deleteLabel(userId: string, labelId: string) {
-    const label = await this.prisma.label.delete({
+  async deleteLabel(labelId: string) {
+    const label = await this.prisma.label.findFirst({
       where: {
-        userId,
         id: labelId,
       },
     });
 
     if (!label) {
-      return ResponseUtil.error('Label not found', HttpStatus.NOT_FOUND);
+      return ResponseUtil.error(
+        'Label not found',
+        HttpStatus.NOT_FOUND,
+        HttpStatus[HttpStatus.NOT_FOUND],
+      );
     }
+
+    await this.prisma.label.delete({
+      where: {
+        id: labelId,
+      },
+    });
 
     return ResponseUtil.success('Label deleted successfully');
   }
