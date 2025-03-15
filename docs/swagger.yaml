@@ -7,10 +7,20 @@ info:
     name: Aminul Islam Abid
     email: aminul.i.abid@gmail.com
 servers:
+  - description: Prod Server
+    url: https://solome.onrender.com/api/v1
   - description: Dev Server
     url: http://localhost:3000/api/v1
-  - description: Prod Server
-    url: https://solome.vercel.app/api/v1
+  - url: '{protocol}://{host}'
+    description: Dynamic Server
+    variables:
+      protocol:
+        default: 'http'
+        enum:
+          - 'http'
+          - 'https'
+      host:
+        default: 'localhost:3000/api/v1'
 tags:
   - name: Health
     description: Server Health Check Operation
