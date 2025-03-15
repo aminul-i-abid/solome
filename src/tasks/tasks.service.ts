@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponseUtil } from 'src/utils/response.util';
+import { GetTasksParamsDto } from './dto/get-tasks-params.dto';
 import { TaskDto } from './dto/task.dto';
 
 @Injectable()
@@ -75,5 +76,19 @@ export class TasksService {
         HttpStatus[HttpStatus.INTERNAL_SERVER_ERROR],
       );
     }
+  }
+
+  async getTasks(params: GetTasksParamsDto) {
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        projectId: params.project_id,
+        labelId: params.label_id,
+        dueDate: params.due_date,
+        priority: params.priority,
+        status: params.status,
+      },
+    });
+
+    return ResponseUtil.success('Retrieve all tasks successfully', tasks);
   }
 }
