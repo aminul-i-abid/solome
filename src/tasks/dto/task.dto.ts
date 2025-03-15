@@ -64,7 +64,7 @@ export class TaskDto {
 
   @IsOptional()
   @IsEnum(TaskStatus, {
-    message: 'Status must be TODO, IN_PROGRESS, or COMPLETE',
+    message: 'Status must be TODO, IN_PROGRESS, or COMPLETED',
   })
   status: TaskStatus;
 
